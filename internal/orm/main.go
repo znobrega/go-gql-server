@@ -5,13 +5,12 @@ package orm
 import (
 	log "github.com/znobrega/go-gql-server/internal/logger"
 
-	"github.com/znobrega/go-gql-server/internal/orm/migration"
-	"github.com/znobrega/go-gql-server/pkg/utils"
-
 	//Imports the database dialect of choice
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
 	"github.com/jinzhu/gorm"
+	"github.com/znobrega/go-gql-server/internal/ocm/migration"
+	"github.com/znobrega/go-gql-server/pkg/utils"
 )
 
 var autoMigrate, logMode, seedDB bool
