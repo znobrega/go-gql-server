@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/99designs/gqlgen v0.11.3
+	github.com/cmelgarejo/go-gql-server v0.0.0-20200505152618-c1dec4c379ef
 	github.com/gin-gonic/gin v1.6.3 // direct
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
