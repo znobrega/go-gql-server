@@ -14,7 +14,9 @@ model:
   package: models
 # Let gqlgen know where to put the generated resolvers
 resolver:
-  filename: internal/gql/resolvers/generated.go
+  filename: internal/gql/resolvers/generated/generated.go
   type: Resolver
   package: resolvers
-autobind: []
+  
+autobind: 
+  - "github.com/znobrega/go-gql-server/internal/models"
