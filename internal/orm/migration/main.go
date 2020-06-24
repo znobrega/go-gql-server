@@ -6,8 +6,7 @@ import (
 	log "github.com/znobrega/go-gql-server/internal/logger"
 
 	"github.com/jinzhu/gorm"
-
-	"github.com/znobrega/go-gql-server/internal/orm/jobs"
+	"github.com/znobrega/go-gql-server/internal/orm/migration/jobs"
 	"github.com/znobrega/go-gql-server/internal/orm/models"
 	"gopkg.in/gormigrate.v1"
 )
@@ -26,9 +25,8 @@ func ServiceAutoMigration(db *gorm.DB) error {
 		log.Info("[Migration.InitSchema] Initializing database schema")
 		switch db.Dialect().GetName() {
 		case "postgres":
-			// Let's create the UUID extension, the user has to ahve superuser
-			// permission for now
 			db.Exec("create extension \"uuid-ossp\";")
+
 		}
 		if err := updateMigration(db); err != nil {
 			return fmt.Errorf("[Migration.InitSchema]: %v", err)

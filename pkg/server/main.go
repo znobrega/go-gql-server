@@ -1,7 +1,7 @@
 package server
 
 import (
-	"log"
+	log "github.com/znobrega/go-gql-server/internal/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -41,12 +41,12 @@ func Run(orm *orm.ORM) {
 		r.GET(gqlPgPath, handlers.PlaygroundHandler(gqlPath))
 		log.Info("GraphQL Playground @ " + endpoint + gqlPgPath)
 	}
-	r.POST(gqlPath, handlers.GraphqlHandler())
+	r.POST(gqlPath, handlers.GraphqlHandler(orm))
 	log.Info("GraphQL @ " + endpoint + gqlPath)
 
 	// Run the server
 	// Inform the user where the server is listening
 	log.Info("Running @ " + endpoint)
 	// Print out and exit(1) to the OS if the server cannot run
-	log.Fatalln(r.Run(host + ":" + port))
+	log.Fatal(r.Run(host + ":" + port))
 }

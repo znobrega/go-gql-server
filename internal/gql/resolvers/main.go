@@ -4,9 +4,12 @@ package resolvers
 
 import (
 	"github.com/znobrega/go-gql-server/internal/gql"
+	"github.com/znobrega/go-gql-server/internal/orm"
 )
 
-type Resolver struct{}
+type Resolver struct {
+	ORM *orm.ORM
+}
 
 // Mutation returns gql.MutationResolver implementation.
 func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }

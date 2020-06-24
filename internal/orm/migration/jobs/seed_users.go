@@ -1,8 +1,8 @@
 package jobs
 
 import (
-	"github.com/cmelgarejo/go-gql-server/internal/orm/models"
 	"github.com/jinzhu/gorm"
+	"github.com/znobrega/go-gql-server/internal/orm/models"
 	"gopkg.in/gormigrate.v1"
 )
 

@@ -3,14 +3,16 @@
 package orm
 
 import (
+	"github.com/joho/godotenv"
 	log "github.com/znobrega/go-gql-server/internal/logger"
 
+	"github.com/znobrega/go-gql-server/internal/orm/migration"
+
+	"github.com/znobrega/go-gql-server/pkg/utils"
 	//Imports the database dialect of choice
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 
 	"github.com/jinzhu/gorm"
-	"github.com/znobrega/go-gql-server/internal/ocm/migration"
-	"github.com/znobrega/go-gql-server/pkg/utils"
 )
 
 var autoMigrate, logMode, seedDB bool
@@ -22,6 +24,7 @@ type ORM struct {
 }
 
 func init() {
+	godotenv.Load(".env")
 	dialect = utils.MustGet("GORM_DIALECT")
 	dsn = utils.MustGet("GORM_CONNECTION_DSN")
 	seedDB = utils.MustGetBool("GORM_SEED_DB")
@@ -29,7 +32,8 @@ func init() {
 	autoMigrate = utils.MustGetBool("GORM_AUTOMIGRATE")
 }
 
-// Factory creates a db connection with the selected dialect and connection string
+// Factory creates a db connection with the selected dialect and connection
+// string
 func Factory() (*ORM, error) {
 	db, err := gorm.Open(dialect, dsn)
 	if err != nil {
