@@ -8,7 +8,7 @@ import (
 // DBUserToGQLUser transforms [user] db input to gql type
 func DBVideoToGQLVideo(i *dbm.Video) (o *gql.Video, err error) {
 	o = &gql.Video{
-		ID:    i.ID.String(),
+		ID:    *i.ID,
 		Title: i.Title,
 		URL:   *i.Url,
 	}
