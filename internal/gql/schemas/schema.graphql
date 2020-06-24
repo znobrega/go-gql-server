@@ -33,6 +33,17 @@ type Users {
   list: [User!]! # that is why we need to specify the users object this way
 }
 
+type Video {
+  ID: ID!
+  url: String!
+  title: String!
+}
+
+type Videos {
+  count: Int
+  list: [Video!]!
+}
+
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
@@ -43,4 +54,5 @@ type Mutation {
 # Define queries here
 type Query {
   users(id: ID): Users!
+  videos(id: ID): Videos!
 }
