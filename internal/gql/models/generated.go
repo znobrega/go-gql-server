@@ -36,3 +36,14 @@ type Users struct {
 	Count *int    `json:"count"`
 	List  []*User `json:"list"`
 }
+
+type Video struct {
+	ID    string `json:"ID"`
+	URL   string `json:"url"`
+	Title string `json:"title"`
+}
+
+type Videos struct {
+	Count *int     `json:"count"`
+	List  []*Video `json:"list"`
+}
