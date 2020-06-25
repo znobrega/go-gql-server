@@ -44,6 +44,17 @@ type Videos {
   list: [Video!]!
 }
 
+type Post {
+  ID: ID!
+  url: String!
+  title: String!
+  comment: String!
+}
+
+type Posts {
+  count: Int,
+  list: [Post!]!
+}
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
@@ -55,4 +66,5 @@ type Mutation {
 type Query {
   users(id: ID): Users!
   videos(id: ID): Videos!
+  posts(id: ID): Posts!
 }

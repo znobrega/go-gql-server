@@ -6,6 +6,18 @@ import (
 	"time"
 )
 
+type Post struct {
+	ID      string `json:"ID"`
+	URL     string `json:"url"`
+	Title   string `json:"title"`
+	Comment string `json:"comment"`
+}
+
+type Posts struct {
+	Count *int    `json:"count"`
+	List  []*Post `json:"list"`
+}
+
 type User struct {
 	ID          string     `json:"id"`
 	Email       string     `json:"email"`

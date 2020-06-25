@@ -14,7 +14,7 @@ var (
 	description              = "This is the first user ever!"
 	location                 = "His house, maybe? Wouldn't know"
 	firstUser   *models.User = &models.User{
-		Email:       "test@test.com",
+		Email:       "test@test.com2sadsasd",
 		Name:        &uname,
 		FirstName:   &fname,
 		LastName:    &lname,
@@ -26,7 +26,7 @@ var (
 
 // SeedUsers inserts the first users
 var SeedUsers *gormigrate.Migration = &gormigrate.Migration{
-	ID: "SEED_USERS",
+	ID: "SEED_USERS2",
 	Migrate: func(db *gorm.DB) error {
 		return db.Create(&firstUser).Error
 	},
