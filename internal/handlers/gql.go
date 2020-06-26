@@ -13,7 +13,7 @@ func GraphqlHandler(orm *orm.ORM) gin.HandlerFunc {
 	// NewExecutableSchema and Config are in the generated.go file
 	c := gql.Config{
 		Resolvers: &resolvers.Resolver{
-			ORM: orm, // pass in the ORM instance in the resolvers to be used
+			ORM: orm,
 		},
 	}
 

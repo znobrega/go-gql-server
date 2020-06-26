@@ -46,6 +46,7 @@ func ServiceAutoMigration(db *gorm.DB) error {
 		jobs.SeedUsers,
 		jobs.SeedVideos,
 		jobs.SeedPosts,
+		jobs.SeedOrder,
 	})
 	return m.Migrate()
 }

@@ -11,11 +11,11 @@ type Resolver struct {
 	ORM *orm.ORM
 }
 
-// Mutation returns gql.MutationResolver implementation.
 func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }
+func (r *Resolver) Query() gql.QueryResolver       { return &queryResolver{r} }
 
-// Query returns gql.QueryResolver implementation.
-func (r *Resolver) Query() gql.QueryResolver { return &queryResolver{r} }
+func (r *Resolver) Order() gql.OrderResolver { return &orderResolver{r} }
 
+type orderResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
