@@ -1,7 +1,7 @@
 # Ignore VSCode workspace config files
 .vscode
 .history
-.ide
+.idea
 
 
 # MacOS temp files

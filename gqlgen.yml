@@ -16,7 +16,9 @@ model:
 resolver:
   filename: internal/gql/resolvers/generated/resolver.go
   type: Resolver
-  package: resolvers
+
   
-autobind: 
-  - "github.com/znobrega/go-gql-server/internal/models"
+models:
+  Order:
+    model: github.com/znobrega/go-gql-server/internal/gql/models.Order
+autobind: []

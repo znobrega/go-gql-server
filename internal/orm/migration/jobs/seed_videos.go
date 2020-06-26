@@ -7,17 +7,16 @@ import (
 )
 
 var (
-	id                       = "123"
-	url                      = "https://VIDEO.COM"
+	id                       = "1232"
+	url                      = "https://VIDEO.COM2"
 	firstVideo *models.Video = &models.Video{
-		Title: "This is the first VIDEO!",
+		Title: "This is the first VIDEO!2",
 		Url:   &url,
 	}
 )
 
-// SeedUsers inserts the first users
 var SeedVideos *gormigrate.Migration = &gormigrate.Migration{
-	ID: "SEED_VIDEOS",
+	ID: "SEED_VIDEOS2",
 	Migrate: func(db *gorm.DB) error {
 		return db.Create(&firstVideo).Error
 	},
