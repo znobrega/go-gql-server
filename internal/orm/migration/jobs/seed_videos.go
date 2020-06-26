@@ -15,7 +15,6 @@ var (
 	}
 )
 
-// SeedUsers inserts the first users
 var SeedVideos *gormigrate.Migration = &gormigrate.Migration{
 	ID: "SEED_VIDEOS2",
 	Migrate: func(db *gorm.DB) error {

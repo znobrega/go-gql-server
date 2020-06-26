@@ -1,6 +1,5 @@
 package models
 
-// User defines a user for the app
 type Post struct {
 	ID      string
 	Title   string

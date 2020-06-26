@@ -55,6 +55,12 @@ type Posts {
   count: Int,
   list: [Post!]!
 }
+
+type Order {
+  ID: ID!
+  customerName: String!
+  orderAmount: String!
+}
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
