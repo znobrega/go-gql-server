@@ -14,8 +14,5 @@ type Resolver struct {
 func (r *Resolver) Mutation() gql.MutationResolver { return &mutationResolver{r} }
 func (r *Resolver) Query() gql.QueryResolver       { return &queryResolver{r} }
 
-func (r *Resolver) Order() gql.OrderResolver { return &orderResolver{r} }
-
-type orderResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

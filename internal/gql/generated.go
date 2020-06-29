@@ -37,7 +37,6 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
-	Order() OrderResolver
 	Query() QueryResolver
 }
 
@@ -52,9 +51,9 @@ type ComplexityRoot struct {
 	}
 
 	Order struct {
+		Amount       func(childComplexity int) int
 		CustomerName func(childComplexity int) int
 		ID           func(childComplexity int) int
-		OrderAmount  func(childComplexity int) int
 	}
 
 	Orders struct {
@@ -78,7 +77,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Order      func(childComplexity int) int
-		Orders     func(childComplexity int, id *string, limit *int, page *int) int
+		Orders     func(childComplexity int, id *string, limit *int, page *int, filter map[string]interface{}) int
 		Posts      func(childComplexity int, id *string) int
 		Transacoes func(childComplexity int, id *string, name *string) int
 		Users      func(childComplexity int, id *string) int
@@ -126,11 +125,8 @@ type MutationResolver interface {
 	UpdateUser(ctx context.Context, id string, input models.UserInput) (*models.User, error)
 	DeleteUser(ctx context.Context, id string) (bool, error)
 }
-type OrderResolver interface {
-	OrderAmount(ctx context.Context, obj *models.Order) (float64, error)
-}
 type QueryResolver interface {
-	Orders(ctx context.Context, id *string, limit *int, page *int) (*models.Orders, error)
+	Orders(ctx context.Context, id *string, limit *int, page *int, filter map[string]interface{}) (*models.Orders, error)
 	Users(ctx context.Context, id *string) (*models.Users, error)
 	Videos(ctx context.Context, id *string) (*models.Videos, error)
 	Posts(ctx context.Context, id *string) (*models.Posts, error)
@@ -189,6 +185,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateUser(childComplexity, args["id"].(string), args["input"].(models.UserInput)), true
 
+	case "Order.amount":
+		if e.complexity.Order.Amount == nil {
+			break
+		}
+
+		return e.complexity.Order.Amount(childComplexity), true
+
 	case "Order.customerName":
 		if e.complexity.Order.CustomerName == nil {
 			break
@@ -202,13 +205,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.ID(childComplexity), true
-
-	case "Order.orderAmount":
-		if e.complexity.Order.OrderAmount == nil {
-			break
-		}
-
-		return e.complexity.Order.OrderAmount(childComplexity), true
 
 	case "Orders.count":
 		if e.complexity.Orders.Count == nil {
@@ -297,7 +293,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Orders(childComplexity, args["id"].(*string), args["limit"].(*int), args["Page"].(*int)), true
+		return e.complexity.Query.Orders(childComplexity, args["id"].(*string), args["limit"].(*int), args["Page"].(*int), args["filter"].(map[string]interface{})), true
 
 	case "Query.posts":
 		if e.complexity.Query.Posts == nil {
@@ -552,6 +548,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	&ast.Source{Name: "internal/gql/schemas/schema.graphql", Input: `scalar Time
+scalar Map
 # Types
 type User {
   id: ID!
@@ -612,7 +609,7 @@ type Posts {
 type Order {
   ID: ID!
   customerName: String!
-  orderAmount: Float!
+  amount: Float!
 }
 
 type Orders {
@@ -636,7 +633,7 @@ type TransacoesFaturas {
 
 
 type Query {
-  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1): Orders!
+  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1, filter: Map): Orders!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts(id: ID): Posts!
@@ -741,6 +738,14 @@ func (ec *executionContext) field_Query_orders_args(ctx context.Context, rawArgs
 		}
 	}
 	args["Page"] = arg2
+	var arg3 map[string]interface{}
+	if tmp, ok := rawArgs["filter"]; ok {
+		arg3, err = ec.unmarshalOMap2map(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg3
 	return args, nil
 }
 
@@ -1035,7 +1040,7 @@ func (ec *executionContext) _Order_customerName(ctx context.Context, field graph
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Order_orderAmount(ctx context.Context, field graphql.CollectedField, obj *models.Order) (ret graphql.Marshaler) {
+func (ec *executionContext) _Order_amount(ctx context.Context, field graphql.CollectedField, obj *models.Order) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1046,13 +1051,13 @@ func (ec *executionContext) _Order_orderAmount(ctx context.Context, field graphq
 		Object:   "Order",
 		Field:    field,
 		Args:     nil,
-		IsMethod: true,
+		IsMethod: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Order().OrderAmount(rctx, obj)
+		return obj.Amount, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1421,7 +1426,7 @@ func (ec *executionContext) _Query_orders(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Orders(rctx, args["id"].(*string), args["limit"].(*int), args["Page"].(*int))
+		return ec.resolvers.Query().Orders(rctx, args["id"].(*string), args["limit"].(*int), args["Page"].(*int), args["filter"].(map[string]interface{}))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3539,27 +3544,18 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 		case "ID":
 			out.Values[i] = ec._Order_ID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "customerName":
 			out.Values[i] = ec._Order_customerName(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
-		case "orderAmount":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Order_orderAmount(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
+		case "amount":
+			out.Values[i] = ec._Order_amount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4869,6 +4865,20 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return ec.marshalOInt2int(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
+	if v == nil {
+		return nil, nil
+	}
+	return graphql.UnmarshalMap(v)
+}
+
+func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalMap(v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

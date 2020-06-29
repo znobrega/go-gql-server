@@ -10,7 +10,7 @@ var (
 	firstOrder *models.Order = &models.Order{
 		ID:           2,
 		CustomerName: "NILBSON GALINDO",
-		OrderAmount:  3,
+		Amount:       3,
 	}
 )
 
