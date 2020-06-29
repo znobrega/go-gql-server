@@ -20,10 +20,13 @@ func postList(r *queryResolver, id *string) (*models.Posts, error) {
 	record := &models.Posts{}
 	dbRecords := []*dbm.Post{}
 	db := r.ORM.DB.New()
+
 	if id != nil {
 		db = db.Where(whereID, *id)
 	}
+
 	db = db.Find(&dbRecords).Count(&record.Count)
+
 	for _, dbRec := range dbRecords {
 		if rec, err := tf.DBPostToGQLPost(dbRec); err != nil {
 			log.Errorfn(entity, err)

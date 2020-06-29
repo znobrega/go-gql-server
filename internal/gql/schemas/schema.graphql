@@ -65,15 +65,21 @@ type Order {
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
-  updateUser(id: ID!, input: UserInput!): User!
+  updateUser(id: ID! , input: UserInput!): User!
   deleteUser(id: ID!): Boolean!
 }
 
-# Define queries here
+type TransacoesFaturas {
+  id: ID!
+  ds_transacao: String!
+}
+
+
 type Query {
-  orders(id: ID): [Order!]!
+  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1): [Order!]!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts(id: ID): Posts!
   order: Order!
+  transacoes(id: ID = 9999, name: String = "ARGUMENTO VAZIO"): TransacoesFaturas!
 }

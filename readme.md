@@ -9,3 +9,7 @@ link do repositório -> https://github.com/znobrega/go-gql-server.git
 - add a resolver. the resolver name must be equal to the query name 
 - create a transformation file
 
+## sobre os nulls
+
+1 - usar valores default no parametros
+2 - todos os parametros serão listas

@@ -42,7 +42,6 @@ func Factory() (*ORM, error) {
 	orm := &ORM{
 		DB: db,
 	}
-	// Log every SQL command on dev, @prod: this should be disabled?
 	db.LogMode(logMode)
 	// Automigrate tables
 	if autoMigrate {

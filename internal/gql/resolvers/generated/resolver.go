@@ -1,1 +1,1 @@
-package resolvers
+package generated
