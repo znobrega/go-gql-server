@@ -1,4 +1,5 @@
 scalar Time
+scalar Map
 # Types
 type User {
   id: ID!
@@ -56,24 +57,37 @@ type Posts {
   list: [Post!]!
 }
 
-type Order {
-  ID: ID!
-  customerName: String!
-  orderAmount: Float!
-}
 
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
-  updateUser(id: ID!, input: UserInput!): User!
+  updateUser(id: ID! , input: UserInput!): User!
   deleteUser(id: ID!): Boolean!
 }
 
-# Define queries here
+type TransacoesFaturas {
+  id: ID!
+  ds_transacao: String!
+}
+
+type Order {
+  ID: ID!
+  customerName: String!
+  amount: Float!
+}
+
+type Orders {
+  count: Int,
+  page: Int,
+  limit: Int,
+  list: [Order!]!
+}
+
 type Query {
-  orders(id: ID): [Order!]!
+  orders(limit: Int = 10, Page: Int = 1, filter: Map): Orders!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts(id: ID): Posts!
   order: Order!
+  transacoes(id: ID = 9999, name: String = "ARGUMENTO VAZIO"): TransacoesFaturas!
 }

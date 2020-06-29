@@ -21,4 +21,12 @@ resolver:
 models:
   Order:
     model: github.com/znobrega/go-gql-server/internal/gql/models.Order
+  Orders:
+    model: github.com/znobrega/go-gql-server/internal/gql/models.Orders
+    fields: 
+      orderAmount: 
+        resolver: false
+  TransacoesFaturas:
+    model: github.com/znobrega/go-gql-server/internal/gql/models.TransacoesFaturas
+  
 autobind: []

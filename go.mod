@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/99designs/gqlgen v0.11.3
+	github.com/biezhi/gorm-paginator/pagination v0.0.0-20190124091837-7a5c8ed20334
 	github.com/gin-gonic/gin v1.6.3 // direct
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/gofrs/uuid v3.3.0+incompatible
