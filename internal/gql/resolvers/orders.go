@@ -2,7 +2,6 @@ package resolvers
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/biezhi/gorm-paginator/pagination"
 	"github.com/znobrega/go-gql-server/internal/gql/models"
@@ -22,9 +21,10 @@ func (r *orderResolver) OrderAmount(ctx context.Context, obj *models.Order) (flo
 	panic("not implemented")
 }
 
-func (r *queryResolver) Orders(ctx context.Context, id *string, limit *int, page *int) ([]*models.Order, error) {
+func (r *queryResolver) Orders(ctx context.Context, id *string, limit *int, page *int) (*models.Orders, error) {
 	whereID := "id = ?"
 	var dbRecords []*models.Order
+
 	db := r.ORM.DB.New()
 
 	if id == nil {
@@ -35,8 +35,6 @@ func (r *queryResolver) Orders(ctx context.Context, id *string, limit *int, page
 		db = db.Where(whereID, *id)
 	}
 
-	fmt.Println("test")
-
 	pagination.Paging(&pagination.Param{
 		DB:      db,
 		Page:    *page,
@@ -44,5 +42,14 @@ func (r *queryResolver) Orders(ctx context.Context, id *string, limit *int, page
 		OrderBy: []string{"id asc"},
 	}, &dbRecords)
 
-	return dbRecords, db.Error
+	count := len(dbRecords)
+
+	response := &models.Orders{
+		Limit: limit,
+		Page:  page,
+		Count: &count,
+		List:  dbRecords,
+	}
+
+	return response, db.Error
 }

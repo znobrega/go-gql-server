@@ -57,6 +57,13 @@ type ComplexityRoot struct {
 		OrderAmount  func(childComplexity int) int
 	}
 
+	Orders struct {
+		Count func(childComplexity int) int
+		Limit func(childComplexity int) int
+		List  func(childComplexity int) int
+		Page  func(childComplexity int) int
+	}
+
 	Post struct {
 		Comment func(childComplexity int) int
 		ID      func(childComplexity int) int
@@ -123,7 +130,7 @@ type OrderResolver interface {
 	OrderAmount(ctx context.Context, obj *models.Order) (float64, error)
 }
 type QueryResolver interface {
-	Orders(ctx context.Context, id *string, limit *int, page *int) ([]*models.Order, error)
+	Orders(ctx context.Context, id *string, limit *int, page *int) (*models.Orders, error)
 	Users(ctx context.Context, id *string) (*models.Users, error)
 	Videos(ctx context.Context, id *string) (*models.Videos, error)
 	Posts(ctx context.Context, id *string) (*models.Posts, error)
@@ -202,6 +209,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Order.OrderAmount(childComplexity), true
+
+	case "Orders.count":
+		if e.complexity.Orders.Count == nil {
+			break
+		}
+
+		return e.complexity.Orders.Count(childComplexity), true
+
+	case "Orders.limit":
+		if e.complexity.Orders.Limit == nil {
+			break
+		}
+
+		return e.complexity.Orders.Limit(childComplexity), true
+
+	case "Orders.list":
+		if e.complexity.Orders.List == nil {
+			break
+		}
+
+		return e.complexity.Orders.List(childComplexity), true
+
+	case "Orders.page":
+		if e.complexity.Orders.Page == nil {
+			break
+		}
+
+		return e.complexity.Orders.Page(childComplexity), true
 
 	case "Post.comment":
 		if e.complexity.Post.Comment == nil {
@@ -580,6 +615,13 @@ type Order {
   orderAmount: Float!
 }
 
+type Orders {
+  count: Int,
+  page: Int,
+  limit: Int,
+  list: [Order!]!
+}
+
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
@@ -594,7 +636,7 @@ type TransacoesFaturas {
 
 
 type Query {
-  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1): [Order!]!
+  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1): Orders!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts(id: ID): Posts!
@@ -1027,6 +1069,133 @@ func (ec *executionContext) _Order_orderAmount(ctx context.Context, field graphq
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Orders_count(ctx context.Context, field graphql.CollectedField, obj *models.Orders) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Orders",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Count, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Orders_page(ctx context.Context, field graphql.CollectedField, obj *models.Orders) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Orders",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Page, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Orders_limit(ctx context.Context, field graphql.CollectedField, obj *models.Orders) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Orders",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Limit, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Orders_list(ctx context.Context, field graphql.CollectedField, obj *models.Orders) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:   "Orders",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.List, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Order)
+	fc.Result = res
+	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋznobregaᚋgoᚑgqlᚑserverᚋinternalᚋgqlᚋmodelsᚐOrderᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Post_ID(ctx context.Context, field graphql.CollectedField, obj *models.Post) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1264,9 +1433,9 @@ func (ec *executionContext) _Query_orders(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*models.Order)
+	res := resTmp.(*models.Orders)
 	fc.Result = res
-	return ec.marshalNOrder2ᚕᚖgithubᚗcomᚋznobregaᚋgoᚑgqlᚑserverᚋinternalᚋgqlᚋmodelsᚐOrderᚄ(ctx, field.Selections, res)
+	return ec.marshalNOrders2ᚖgithubᚗcomᚋznobregaᚋgoᚑgqlᚑserverᚋinternalᚋgqlᚋmodelsᚐOrders(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3402,6 +3571,39 @@ func (ec *executionContext) _Order(ctx context.Context, sel ast.SelectionSet, ob
 	return out
 }
 
+var ordersImplementors = []string{"Orders"}
+
+func (ec *executionContext) _Orders(ctx context.Context, sel ast.SelectionSet, obj *models.Orders) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, ordersImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Orders")
+		case "count":
+			out.Values[i] = ec._Orders_count(ctx, field, obj)
+		case "page":
+			out.Values[i] = ec._Orders_page(ctx, field, obj)
+		case "limit":
+			out.Values[i] = ec._Orders_limit(ctx, field, obj)
+		case "list":
+			out.Values[i] = ec._Orders_list(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var postImplementors = []string{"Post"}
 
 func (ec *executionContext) _Post(ctx context.Context, sel ast.SelectionSet, obj *models.Post) graphql.Marshaler {
@@ -4117,6 +4319,20 @@ func (ec *executionContext) marshalNOrder2ᚖgithubᚗcomᚋznobregaᚋgoᚑgql�
 		return graphql.Null
 	}
 	return ec._Order(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNOrders2githubᚗcomᚋznobregaᚋgoᚑgqlᚑserverᚋinternalᚋgqlᚋmodelsᚐOrders(ctx context.Context, sel ast.SelectionSet, v models.Orders) graphql.Marshaler {
+	return ec._Orders(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNOrders2ᚖgithubᚗcomᚋznobregaᚋgoᚑgqlᚑserverᚋinternalᚋgqlᚋmodelsᚐOrders(ctx context.Context, sel ast.SelectionSet, v *models.Orders) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Orders(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNPost2githubᚗcomᚋznobregaᚋgoᚑgqlᚑserverᚋinternalᚋgqlᚋmodelsᚐPost(ctx context.Context, sel ast.SelectionSet, v models.Post) graphql.Marshaler {

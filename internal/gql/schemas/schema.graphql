@@ -62,6 +62,13 @@ type Order {
   orderAmount: Float!
 }
 
+type Orders {
+  count: Int,
+  page: Int,
+  limit: Int,
+  list: [Order!]!
+}
+
 # Define mutations here
 type Mutation {
   createUser(input: UserInput!): User!
@@ -76,7 +83,7 @@ type TransacoesFaturas {
 
 
 type Query {
-  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1): [Order!]!
+  orders(id: ID = -99999, limit: Int = 10, Page: Int = 1): Orders!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts(id: ID): Posts!
