@@ -69,10 +69,20 @@ type TransacoesFaturas {
   ds_transacao: String!
 }
 
+type PageInfo {
+  startCursor: String
+  endCursor: String
+  hasNextPage: String
+  hasBeforePage: String
+  beforeCursor: String
+  nextCursor: String
+}
+
 type Order {
   ID: ID!
   customerName: String!
   amount: Float!
+  orderAmount: Float!
 }
 
 type Orders {
@@ -80,6 +90,8 @@ type Orders {
   page: Int,
   limit: Int,
   list: [Order!]!
+  pageInfo: PageInfo
+  !
 }
 
 # input DefaultInput {

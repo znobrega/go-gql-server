@@ -15,6 +15,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
+	github.com/pilagod/gorm-cursor-paginator v1.3.0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/vektah/gqlparser/v2 v2.0.1
 	golang.org/x/sys v0.0.0-20200622214017-ed371f2e16b4 // indirect
