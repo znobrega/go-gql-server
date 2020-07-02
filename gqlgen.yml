@@ -21,12 +21,16 @@ resolver:
 models:
   Order:
     model: github.com/znobrega/go-gql-server/internal/gql/models.Order
+    # fields: 
+    #   orderAmount: 
+    #     resolver: false
   Orders:
     model: github.com/znobrega/go-gql-server/internal/gql/models.Orders
-    fields: 
-      orderAmount: 
-        resolver: false
   TransacoesFaturas:
     model: github.com/znobrega/go-gql-server/internal/gql/models.TransacoesFaturas
+  PageInfo:
+    model: github.com/znobrega/go-gql-server/internal/gql/models.PageInfo
+  EdgeOrder:
+    model: github.com/znobrega/go-gql-server/internal/gql/models.EdgeOrder
   
 autobind: []
