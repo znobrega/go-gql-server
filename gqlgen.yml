@@ -30,5 +30,7 @@ models:
     model: github.com/znobrega/go-gql-server/internal/gql/models.TransacoesFaturas
   PageInfo:
     model: github.com/znobrega/go-gql-server/internal/gql/models.PageInfo
+  EdgeOrder:
+    model: github.com/znobrega/go-gql-server/internal/gql/models.EdgeOrder
   
 autobind: []

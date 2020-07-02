@@ -89,9 +89,13 @@ type Orders {
   count: Int,
   page: Int,
   limit: Int,
-  list: [Order!]!
+  edges: [EdgeOrder!]!
   pageInfo: PageInfo
-  !
+}
+
+type EdgeOrder {
+  cursor: String!
+  node: Order!
 }
 
 # input DefaultInput {

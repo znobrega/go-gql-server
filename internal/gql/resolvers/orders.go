@@ -52,8 +52,12 @@ func (r *queryResolver) Order(ctx context.Context) (*models.Order, error) {
 	return res, nil
 }
 
+// Paging workin with cursor after page
+// paginator "github.com/pilagod/gorm-cursor-paginator"
 func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filter map[string]interface{}) (*models.Orders, error) {
 	var dbRecords []*models.Order
+	var cursors []string
+	var edges []*models.EdgeOrder
 
 	db := r.ORM.DB.New()
 
@@ -69,9 +73,10 @@ func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filte
 		db = db.Where(filterSnakeCase)
 	}
 	fmt.Printf("Passou 1s ")
-
+	sort := "asc"
 	q := &PagingQuery{
 		Limit: limit,
+		Order: &sort,
 	}
 	p := GetModelPaginator(*q)
 	fmt.Printf("Passou 2 ")
@@ -81,15 +86,7 @@ func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filte
 		log.Panic("Erro")
 	}
 	fmt.Printf("Passou 3 ")
-
-	// cursor := p.GetNextCursor()
-
-	// pagination.Paging(&pagination.Param{
-	// 	DB:      db,
-	// 	Page:    *page,
-	// 	Limit:   *limit,
-	// 	OrderBy: []string{"id desc"},
-	// }, &dbRecords)
+	// cursor := p.GetNext	Cursor()
 
 	count := len(dbRecords)
 	fmt.Printf("Passou count ")
@@ -99,12 +96,23 @@ func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filte
 		NextCursor:   p.GetNextCursor().After,
 	}
 
+	cursors = p.GetCursors()
+
+	for i, element := range cursors {
+		edge := &models.EdgeOrder{
+			Node:   *dbRecords[i],
+			Cursor: element,
+		}
+
+		edges = append(edges, edge)
+	}
+
 	fmt.Printf("Passou 4 ")
 	response := &models.Orders{
 		Limit:    limit,
 		Page:     page,
 		Count:    &count,
-		List:     dbRecords,
+		Edges:    edges,
 		PageInfo: pageInfos,
 	}
 
