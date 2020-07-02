@@ -72,8 +72,8 @@ type TransacoesFaturas {
 type PageInfo {
   startCursor: String
   endCursor: String
-  hasNextPage: String
-  hasBeforePage: String
+  hasNextPage: Boolean!
+  hasBeforePage: Boolean!
   beforeCursor: String
   nextCursor: String
 }
@@ -105,7 +105,7 @@ type EdgeOrder {
 # }
 
 type Query {
-  orders(limit: Int = 10, page: Int = 1, filter: Map): Orders!
+  orders(first: Int = 10, page: Int = 1, filter: Map, after: String, before: String): Orders!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts (id: ID): Posts!

@@ -93,7 +93,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Order      func(childComplexity int) int
-		Orders     func(childComplexity int, limit *int, page *int, filter map[string]interface{}) int
+		Orders     func(childComplexity int, first *int, page *int, filter map[string]interface{}, after *string, before *string) int
 		Posts      func(childComplexity int, id *string) int
 		Transacoes func(childComplexity int, id *string, name *string) int
 		Users      func(childComplexity int, id *string) int
@@ -142,7 +142,7 @@ type MutationResolver interface {
 	DeleteUser(ctx context.Context, id string) (bool, error)
 }
 type QueryResolver interface {
-	Orders(ctx context.Context, limit *int, page *int, filter map[string]interface{}) (*models.Orders, error)
+	Orders(ctx context.Context, first *int, page *int, filter map[string]interface{}, after *string, before *string) (*models.Orders, error)
 	Users(ctx context.Context, id *string) (*models.Users, error)
 	Videos(ctx context.Context, id *string) (*models.Videos, error)
 	Posts(ctx context.Context, id *string) (*models.Posts, error)
@@ -379,7 +379,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Orders(childComplexity, args["limit"].(*int), args["page"].(*int), args["filter"].(map[string]interface{})), true
+		return e.complexity.Query.Orders(childComplexity, args["first"].(*int), args["page"].(*int), args["filter"].(map[string]interface{}), args["after"].(*string), args["before"].(*string)), true
 
 	case "Query.posts":
 		if e.complexity.Query.Posts == nil {
@@ -707,8 +707,8 @@ type TransacoesFaturas {
 type PageInfo {
   startCursor: String
   endCursor: String
-  hasNextPage: String
-  hasBeforePage: String
+  hasNextPage: Boolean!
+  hasBeforePage: Boolean!
   beforeCursor: String
   nextCursor: String
 }
@@ -740,7 +740,7 @@ type EdgeOrder {
 # }
 
 type Query {
-  orders(limit: Int = 10, page: Int = 1, filter: Map): Orders!
+  orders(first: Int = 10, page: Int = 1, filter: Map, after: String, before: String): Orders!
   users(id: ID): Users!
   videos(id: ID): Videos!
   posts (id: ID): Posts!
@@ -822,13 +822,13 @@ func (ec *executionContext) field_Query_orders_args(ctx context.Context, rawArgs
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *int
-	if tmp, ok := rawArgs["limit"]; ok {
+	if tmp, ok := rawArgs["first"]; ok {
 		arg0, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["limit"] = arg0
+	args["first"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["page"]; ok {
 		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
@@ -845,6 +845,22 @@ func (ec *executionContext) field_Query_orders_args(ctx context.Context, rawArgs
 		}
 	}
 	args["filter"] = arg2
+	var arg3 *string
+	if tmp, ok := rawArgs["after"]; ok {
+		arg3, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg3
+	var arg4 *string
+	if tmp, ok := rawArgs["before"]; ok {
+		arg4, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg4
 	return args, nil
 }
 
@@ -1519,11 +1535,14 @@ func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_hasBeforePage(ctx context.Context, field graphql.CollectedField, obj *models.PageInfo) (ret graphql.Marshaler) {
@@ -1550,11 +1569,14 @@ func (ec *executionContext) _PageInfo_hasBeforePage(ctx context.Context, field g
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(bool)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_beforeCursor(ctx context.Context, field graphql.CollectedField, obj *models.PageInfo) (ret graphql.Marshaler) {
@@ -1844,7 +1866,7 @@ func (ec *executionContext) _Query_orders(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Orders(rctx, args["limit"].(*int), args["page"].(*int), args["filter"].(map[string]interface{}))
+		return ec.resolvers.Query().Orders(rctx, args["first"].(*int), args["page"].(*int), args["filter"].(map[string]interface{}), args["after"].(*string), args["before"].(*string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4074,8 +4096,14 @@ func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._PageInfo_endCursor(ctx, field, obj)
 		case "hasNextPage":
 			out.Values[i] = ec._PageInfo_hasNextPage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "hasBeforePage":
 			out.Values[i] = ec._PageInfo_hasBeforePage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "beforeCursor":
 			out.Values[i] = ec._PageInfo_beforeCursor(ctx, field, obj)
 		case "nextCursor":

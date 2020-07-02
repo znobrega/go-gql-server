@@ -24,6 +24,8 @@ type Cursor struct {
 func GetModelPaginator(q PagingQuery) *paginator.Paginator {
 	p := paginator.New()
 
+	// p.SetKeys("customer_name")
+
 	if q.After != nil {
 		p.SetAfterCursor(*q.After) // [default: nil]
 	}
@@ -54,7 +56,7 @@ func (r *queryResolver) Order(ctx context.Context) (*models.Order, error) {
 
 // Paging workin with cursor after page
 // paginator "github.com/pilagod/gorm-cursor-paginator"
-func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filter map[string]interface{}) (*models.Orders, error) {
+func (r *queryResolver) Orders(ctx context.Context, first *int, page *int, filter map[string]interface{}, after *string, before *string) (*models.Orders, error) {
 	var dbRecords []*models.Order
 	var cursors []string
 	var edges []*models.EdgeOrder
@@ -75,8 +77,10 @@ func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filte
 	fmt.Printf("Passou 1s ")
 	sort := "asc"
 	q := &PagingQuery{
-		Limit: limit,
-		Order: &sort,
+		After:  after,
+		Before: before,
+		Limit:  first,
+		Order:  &sort,
 	}
 	p := GetModelPaginator(*q)
 	fmt.Printf("Passou 2 ")
@@ -86,14 +90,17 @@ func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filte
 		log.Panic("Erro")
 	}
 	fmt.Printf("Passou 3 ")
-	// cursor := p.GetNext	Cursor()
 
 	count := len(dbRecords)
 	fmt.Printf("Passou count ")
 
 	pageInfos := &models.PageInfo{
-		BeforeCursor: p.GetNextCursor().Before,
-		NextCursor:   p.GetNextCursor().After,
+		BeforeCursor:  nil,
+		NextCursor:    nil,
+		StartCursor:   p.GetNextCursor().Before,
+		EndCursor:     p.GetNextCursor().After,
+		HasNextPage:   models.HasPage(p.GetNextCursor().After),
+		HasBeforePage: models.HasPage(p.GetNextCursor().Before),
 	}
 
 	cursors = p.GetCursors()
@@ -109,7 +116,7 @@ func (r *queryResolver) Orders(ctx context.Context, limit *int, page *int, filte
 
 	fmt.Printf("Passou 4 ")
 	response := &models.Orders{
-		Limit:    limit,
+		Limit:    first,
 		Page:     page,
 		Count:    &count,
 		Edges:    edges,
