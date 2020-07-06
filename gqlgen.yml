@@ -33,4 +33,5 @@ models:
   EdgeOrder:
     model: github.com/znobrega/go-gql-server/internal/gql/models.EdgeOrder
   
-autobind: []
+autobind: 
+  - "github.com/znobrega/go-gql-server/internal/gql/models"
